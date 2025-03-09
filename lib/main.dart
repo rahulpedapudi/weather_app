@@ -11,6 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
@@ -28,8 +29,47 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String data = "";
+  final textController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: AppBar(title: Text("Weather Application")));
+    return Scaffold(
+      appBar: AppBar(title: Text("Weather Application")),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: textController,
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                labelText: 'Enter a City Name',
+                hintText: 'eg. Delhi',
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.clear),
+                  onPressed: () {
+                    textController.clear();
+                    setState(() {
+                      data = "";
+                    });
+                  },
+                ),
+              ),
+            ),
+            SizedBox(height: 20),
+            FilledButton(
+              onPressed: () {
+                setState(() {
+                  data = textController.text;
+                });
+              },
+              child: Text("Submit"),
+            ),
+            SizedBox(height: 20),
+            Text(data),
+          ],
+        ),
+      ),
+    );
   }
 }
