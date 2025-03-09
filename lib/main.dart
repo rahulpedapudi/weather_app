@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:weather_app/weather_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => WeatherProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -29,18 +36,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String data = "";
-  final textController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final WeatherProvider weatherProvider = Provider.of<WeatherProvider>(
+      context,
+    );
     return Scaffold(
       appBar: AppBar(title: Text("Weather Application")),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Image.asset('assets/cloudy-sun.png', height: 300, width: 300),
             TextField(
-              controller: textController,
+              controller: _textController,
               decoration: InputDecoration(
                 prefixIcon: Icon(Icons.search),
                 labelText: 'Enter a City Name',
@@ -48,27 +59,30 @@ class _HomePageState extends State<HomePage> {
                 suffixIcon: IconButton(
                   icon: Icon(Icons.clear),
                   onPressed: () {
-                    textController.clear();
-                    setState(() {
-                      data = "";
-                    });
+                    _textController.clear();
                   },
                 ),
               ),
             ),
             SizedBox(height: 20),
             FilledButton(
+              child: Text("Get Weather"),
               onPressed: () {
                 setState(() {
-                  data = textController.text;
+                  if (_textController.text.isNotEmpty) {
+                    weatherProvider.updateCity(_textController.text);
+                  }
                 });
               },
-              child: Text("Submit"),
             ),
             SizedBox(height: 20),
-            Text(data),
+            Text(weatherProvider.weatherData),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: weatherProvider.fetchData,
+        child: Icon(Icons.refresh),
       ),
     );
   }
